@@ -1,7 +1,8 @@
 var http = require('http');
-var PORT = 3000;
+var fs = require('fs');
 var url = require('url');
-var qs = require('querystring')
+var qs = require('querystring');
+var PORT = 3000;
 
 var server = http.createServer(function(request, response) {
   var queryString = url.parse( request.url );
@@ -9,20 +10,37 @@ var server = http.createServer(function(request, response) {
 
   request.on('data', function(data) {
     dataBuffer += data;
+    //copy
+    var datas = qs.parse(dataBuffer);
+    var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + datas.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + datas.elementName + '</h1><h2>' + datas.elementSymbol + '</h2><h3>Atomic number ' + datas.elementAtomicNumber + '</h3><p>' + datas.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
+
+    fs.writeFile('public/' + datas.elementName + '.html', insides, function(err) {
+      if (err) {
+        throw err;
+      } else {
+        console.log('save complete');
+      }
+    });
+
+    response.end(JSON.stringify({ 'success' : true }));
+    //pasta
+
   });
 
   request.on('end', function() {
-    console.log('done getting data');
-    var data = qs.parse(dataBuffer.toString());
-    console.log(data);
+    var inputFromBrowser = url.parse(request.url);
 
-    response.end('Hello ' + data.weapon + ' ' + data.animal);
+    fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
+      if (err) {
+        fs.readFile('./public/404.html', function(err2, data2) {
+          response.end(data2.toString());
+        });
+      } else {
+        response.end(data.toString());
+      }
+    });
   });
-
-  // console.log('server created', request.url);
-  // response.write('send data!!');
 });
-
 
 server.listen(PORT, function() {
   console.log('server listening on port' + PORT);
