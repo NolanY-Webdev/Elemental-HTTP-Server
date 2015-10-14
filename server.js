@@ -10,11 +10,16 @@ var server = http.createServer(function(request, response) {
 
   request.on('data', function(data) {
     dataBuffer += data;
-    //copy
-    var datas = qs.parse(dataBuffer);
-    var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + datas.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + datas.elementName + '</h1><h2>' + datas.elementSymbol + '</h2><h3>Atomic number ' + datas.elementAtomicNumber + '</h3><p>' + datas.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
+  });
 
-    fs.writeFile('public/' + datas.elementName + '.html', insides, function(err) {
+  var datas = qs.parse(dataBuffer);
+  console.log(dataBuffer)
+  var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + datas.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + datas.elementName + '</h1><h2>' + datas.elementSymbol + '</h2><h3>Atomic number ' + datas.elementAtomicNumber + '</h3><p>' + datas.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
+
+
+  request.on('end', function() {
+    if (request.method === 'POST') {
+      fs.writeFile('public/' + datas.elementName + '.html', insides, function(err) {
       if (err) {
         throw err;
       } else {
@@ -22,15 +27,13 @@ var server = http.createServer(function(request, response) {
       }
     });
 
-    response.end(JSON.stringify({ 'success' : true }));
-    //pasta
+      response.end(JSON.stringify({ 'success' : true }));
+    }
 
-  });
+    if (request.method === 'GET') {
+      var inputFromBrowser = url.parse(request.url);
 
-  request.on('end', function() {
-    var inputFromBrowser = url.parse(request.url);
-
-    fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
+      fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
       if (err) {
         fs.readFile('./public/404.html', function(err2, data2) {
           response.end(data2.toString());
@@ -39,6 +42,7 @@ var server = http.createServer(function(request, response) {
         response.end(data.toString());
       }
     });
+    }
   });
 });
 
