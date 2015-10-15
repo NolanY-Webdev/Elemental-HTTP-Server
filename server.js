@@ -32,16 +32,19 @@ var server = http.createServer(function(request, response) {
 
     if (request.method === 'GET') {
       var inputFromBrowser = url.parse(request.url);
-
-      fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
-      if (err) {
-        fs.readFile('./public/404.html', function(err2, data2) {
-          response.end(data2.toString());
-        });
+      if (url.parse(request.url).path == '/') {
+        fs.readFile('./public/index.html' );
       } else {
-        response.end(data.toString());
+        fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
+          if (err) {
+            fs.readFile('./public/404.html', function(err2, data2) {
+              response.end(data2.toString());
+            });
+          } else {
+            response.end(data.toString());
+          }
+        });
       }
-    });
     }
   });
 });
