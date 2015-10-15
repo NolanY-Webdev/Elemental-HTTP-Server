@@ -10,16 +10,17 @@ var server = http.createServer(function(request, response) {
 
   request.on('data', function(data) {
     dataBuffer += data;
+    console.log('data', data);
+    response.end(console.log('got datas'));
   });
 
-  var datas = qs.parse(dataBuffer);
-  console.log(dataBuffer)
-  var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + datas.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + datas.elementName + '</h1><h2>' + datas.elementSymbol + '</h2><h3>Atomic number ' + datas.elementAtomicNumber + '</h3><p>' + datas.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
+  var data = qs.parse(dataBuffer);
+  var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + data.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + data.elementName + '</h1><h2>' + data.elementSymbol + '</h2><h3>Atomic number ' + data.elementAtomicNumber + '</h3><p>' + data.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
 
 
   request.on('end', function() {
     if (request.method === 'POST') {
-      fs.writeFile('public/' + datas.elementName + '.html', insides, function(err) {
+      fs.writeFile('./public/' + data.elementName + '.html', insides, function(err) {
       if (err) {
         throw err;
       } else {
