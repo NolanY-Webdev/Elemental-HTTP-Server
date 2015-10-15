@@ -7,7 +7,7 @@ var PORT = 3000;
 var server = http.createServer(function(request, response) {
   var queryString = url.parse( request.url );
   var dataBuffer = '';
-
+console.log('DO ALL THE THINGS', queryString);
   request.on('data', function(data) {
     dataBuffer += data;
   });
@@ -22,12 +22,12 @@ var server = http.createServer(function(request, response) {
     if (request.method === 'POST') {
       if (request.url === '/elements') {
         fs.writeFile('./public/' + data.elementName + '.html', insides, function(err) {
-        if (err) {
-          throw err;
-        } else {
-          console.log('save complete');
-        }
-      });
+          if (err) {
+            throw err;
+          } else {
+            console.log('save complete');
+          }
+        });
       }
       response.end(JSON.stringify({ 'success' : true }));
     }
