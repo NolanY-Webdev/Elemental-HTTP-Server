@@ -12,7 +12,6 @@ var server = http.createServer(function(request, response) {
     dataBuffer += data;
   });
 
-
   request.on('end', function() {
     var data = qs.parse(dataBuffer.toString());
 
