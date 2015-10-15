@@ -10,24 +10,25 @@ var server = http.createServer(function(request, response) {
 
   request.on('data', function(data) {
     dataBuffer += data;
-    console.log('data', data);
-    response.end(console.log('got datas'));
   });
-
-  var data = qs.parse(dataBuffer);
-  var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + data.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + data.elementName + '</h1><h2>' + data.elementSymbol + '</h2><h3>Atomic number ' + data.elementAtomicNumber + '</h3><p>' + data.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
 
 
   request.on('end', function() {
-    if (request.method === 'POST') {
-      fs.writeFile('./public/' + data.elementName + '.html', insides, function(err) {
-      if (err) {
-        throw err;
-      } else {
-        console.log('save complete');
-      }
-    });
+    var data = qs.parse(dataBuffer.toString());
+    console.log('databuffer', dataBuffer.toString());
+    console.log('data', data);
+    var insides = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>The Elements - ' + data.elementName + '</title><link rel="stylesheet" href="/css/styles.css"></head><body><h1>' + data.elementName + '</h1><h2>' + data.elementSymbol + '</h2><h3>Atomic number ' + data.elementAtomicNumber + '</h3><p>' + data.elementDescription + '</p><p><a href="/">back</a></p></body></html>';
 
+    if (request.method === 'POST') {
+      if (request.url === '/elements') {
+        fs.writeFile('./public/' + data.elementName + '.html', insides, function(err) {
+        if (err) {
+          throw err;
+        } else {
+          console.log('save complete');
+        }
+      });
+      }
       response.end(JSON.stringify({ 'success' : true }));
     }
 
