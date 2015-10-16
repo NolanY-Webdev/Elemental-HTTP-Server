@@ -32,7 +32,7 @@ var server = http.createServer(function(request, response) {
 
     if (request.method === 'GET') {
       var inputFromBrowser = url.parse(request.url);
-      if (url.parse(request.url).path == '/') {
+      if (url.parse(request.url).path === '/') {
         fs.readFile('./public/index.html' );
       } else {
         fs.readFile('./public/' + inputFromBrowser.path, function(err,data) {
